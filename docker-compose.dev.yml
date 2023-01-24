@@ -1,12 +1,12 @@
 services:
   postgres:
-    container_name: postgres
     image: postgres:latest
     volumes:
-      - ./scripts:/docker-entrypoint-initdb.d
+      - ./scripts/sql:/docker-entrypoint-initdb.d
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=avito_tech
     ports:
       - 5432:5432
     networks:
@@ -21,3 +21,6 @@ services:
       - ADMINER_PLUGINS=enum-types enum-option json-column
     networks:
       - avito-tech-dev
+networks:
+  avito-tech-dev:
+    driver: bridge
