@@ -2,8 +2,7 @@ CREATE TABLE announcement (
     id SERIAL PRIMARY KEY,
     name VARCHAR(200) NOT NULL,
     description VARCHAR(1000) NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT NOW()
 );
 
 CREATE TABLE photos (

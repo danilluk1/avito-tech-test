@@ -1,4 +1,4 @@
-package handlers
+package announcements
 
 import "net/http"
 
