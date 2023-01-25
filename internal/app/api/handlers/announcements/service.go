@@ -15,8 +15,8 @@ func AddAnnouncement(app *api.App, dto *dto.CreateAnnouncement) (*models.Announc
 	return announcement, nil
 }
 
-func GetAnnouncementById(app *api.App, id int32) (*models.Announcement, error) {
-	announcement, err := app.AnnouncementService.GetById(id)
+func GetAnnouncementById(app *api.App, id int32, optional bool) (*models.Announcement, error) {
+	announcement, err := app.AnnouncementService.GetById(id, optional)
 	if err != nil {
 		return nil, err
 	}

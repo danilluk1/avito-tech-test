@@ -19,12 +19,12 @@ func NewAnnouncementService(pgConn *sqlx.DB) announcements.AnnouncementService {
 	}
 }
 
-func (as AnnouncementService) GetById(id int32) (*models.Announcement, error) {
+func (as AnnouncementService) GetById(id int32, optional bool) (*models.Announcement, error) {
 	query, args, err := sq.
-		Select("*").
+		Select("announcements.id as id, name, description, array_agg(link) as photos").
 		From("announcements").
-		Where(sq.Eq{"id": id}).
-		//Join("photos ON photos.announcement_id = $1", id).
+		InnerJoin("photos ON photos.announcement_id = $1", id).
+		GroupBy("announcements.id, link").
 		ToSql()
 	query = as.pgConn.Rebind(query)
 	if err != nil {
@@ -32,7 +32,8 @@ func (as AnnouncementService) GetById(id int32) (*models.Announcement, error) {
 	}
 
 	announcement := &models.Announcement{}
-	err = as.pgConn.Get(announcement, query, args...)
+	row := as.pgConn.QueryRowx(query, args...)
+	err = row.StructScan(announcement)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
@@ -46,8 +47,7 @@ func (as AnnouncementService) GetById(id int32) (*models.Announcement, error) {
 func (as AnnouncementService) GetMany(
 	dto *dto.GetAnnouncementsQuery,
 ) (*[]models.Announcement, error) {
-	//TODO implement me
-	panic("implement me")
+	return nil, nil
 }
 
 func (as AnnouncementService) Create(dto *dto.CreateAnnouncement) (*models.Announcement, error) {
@@ -83,7 +83,7 @@ func (as AnnouncementService) Create(dto *dto.CreateAnnouncement) (*models.Annou
 		}
 	}
 
-	announcement, err := as.GetById(id)
+	announcement, err := as.GetById(id, false)
 	if err != nil {
 		return nil, err
 	}

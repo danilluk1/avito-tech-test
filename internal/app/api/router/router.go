@@ -12,7 +12,7 @@ import (
 func Setup(app *api.App) *chi.Mux {
 	router := chi.NewRouter()
 
-	router.Route("/api/announcement", func(r chi.Router) {
+	router.Route("/api/announcements", func(r chi.Router) {
 		r.Get("/", announcements.GetAnnouncements(app))
 		r.Get("/{id}", announcements.GetAnnouncement(app))
 		r.With(func(handler http.Handler) http.Handler {

@@ -2,6 +2,20 @@ package dto
 
 import "time"
 
+type SortBy string
+
+const (
+	SortByPrice SortBy = "price"
+	SortByDate  SortBy = "date"
+)
+
+type OrderBy string
+
+const (
+	OrderByAsc  OrderBy = "asc"
+	OrderByDesc OrderBy = "desc"
+)
+
 type Announcement struct {
 	ID          int32     `json:"id"`
 	Name        string    `json:"name"`
@@ -11,10 +25,10 @@ type Announcement struct {
 }
 
 type GetAnnouncementsQuery struct {
-	Limit   int32  `json:"limit" validate:"required gte=0,lte=30"`
-	Offset  int32  `json:"offset" validate:"required gte=0"`
-	SortBy  string `json:"sortBy" validate:"required"`
-	OrderBy string `json:"orderBy" validate:"required"`
+	Limit   int32   `json:"limit" validate:"gte=0,lte=30"`
+	Offset  int32   `json:"offset" validate:"gte=0"`
+	SortBy  SortBy  `json:"sortBy" validate:""`
+	OrderBy OrderBy `json:"orderBy" validate:""`
 }
 
 type CreateAnnouncement struct {
