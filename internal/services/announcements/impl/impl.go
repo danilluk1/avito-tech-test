@@ -2,6 +2,7 @@ package impl
 
 import (
 	"database/sql"
+	"fmt"
 	sq "github.com/Masterminds/squirrel"
 	"github.com/danilluk1/avito-tech/internal/db/models"
 	"github.com/danilluk1/avito-tech/internal/dto"
@@ -60,10 +61,12 @@ func (as AnnouncementService) Create(dto dto.CreateAnnouncement) (*models.Announ
 		return nil, err
 	}
 
-	rows, err = as.pgConn.Queryx(query, args...)
+	rows, err := as.pgConn.Queryx(query, args...)
 	if err != nil {
 		return nil, err
 	}
 
-	fmt.Pr
+	fmt.Println(rows)
+
+	return nil, nil
 }

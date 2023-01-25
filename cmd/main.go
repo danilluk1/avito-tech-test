@@ -1,10 +1,13 @@
-package cmd
+package main
 
 import (
 	"context"
-	"database/sql"
 	"github.com/danilluk1/avito-tech/config"
-	api "github.com/danilluk1/avito-tech/internal/api/router"
+	api "github.com/danilluk1/avito-tech/internal/api"
+	router "github.com/danilluk1/avito-tech/internal/api/router"
+	announcementimpl "github.com/danilluk1/avito-tech/internal/services/announcements/impl"
+	"github.com/jmoiron/sqlx"
+	"github.com/lib/pq"
 	"log"
 	"net/http"
 	"os"
@@ -17,15 +20,24 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-	ctx := context.Background()
-
-	db, err := sql.Open("postgres", cfg.DbConn)
+	dbConnOpts, err := pq.ParseURL(cfg.DbConn)
 	if err != nil {
 		panic(err)
 	}
 
-	router := api.Setup()
+	ctx := context.Background()
+
+	db, err := sqlx.Connect("postgres", dbConnOpts)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	app := &api.App{
+		AnnouncementService: announcementimpl.NewAnnouncementService(db),
+	}
+
+	router := router.Setup(app)
 
 	srv := &http.Server{
 		Addr:         "localhost:3002",
@@ -48,7 +60,7 @@ func main() {
 
 	ctx, cancel := context.WithTimeout(ctx, time.Second*15)
 	defer cancel()
-	
+
 	srv.Shutdown(ctx)
 	log.Println("shutting down")
 	os.Exit(0)

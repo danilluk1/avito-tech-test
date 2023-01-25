@@ -1,0 +1,22 @@
+version: "3"
+
+tasks:
+    services-up:
+        cmds:
+            - docker compose up -d postgres
+    services-down:
+        cmds:
+            - docker compose down
+
+    migrate-create:
+        cmds:
+            - docker run --user $(id -u):$(id -g) -v $(pwd)/db/migrations:/migrations --network host migrate/migrate create -ext sql -dir /migrations -seq new-migration
+    migrate-up:
+        cmds:
+            - docker run --user $(id -u):$(id -g) -v $(pwd)/db/migrations:/migrations --network host migrate/migrate -path=/migrations/ -database postgres://postgres:admin@localhost:5432/avito_tech?sslmode=disable up
+    migrate-remove:
+        cmds:
+            - docker run --user $(id -u):$(id -g) -v $(pwd)/db/migrations:/migrations --network host migrate/migrate -path=/migrations/ -database postgres://postgres:admin@localhost:5432/avito_tech?sslmode=disable down -all
+    down:
+        cmds:
+            - docker compose down -v

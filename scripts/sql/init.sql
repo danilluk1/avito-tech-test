@@ -1,4 +1,4 @@
-CREATE TABLE announcement (
+CREATE TABLE announcements (
     id SERIAL PRIMARY KEY,
     name VARCHAR(200) NOT NULL,
     description VARCHAR(1000) NOT NULL,
