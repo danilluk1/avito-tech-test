@@ -18,8 +18,7 @@ type GetAnnouncementsQuery struct {
 }
 
 type CreateAnnouncement struct {
-	Name        string    `json:"name"`
-	Description string    `json:"description"`
-	CreatedAt   time.Time `json:"created_at"`
-	Photos      []string  `json:"photos"`
+	Name        string   `json:"name" validate:"required,min=5,max=200"`
+	Description string   `json:"description" validate:"required,min=5,max=1000"`
+	Photos      []string `json:"photos" validate:"required"`
 }

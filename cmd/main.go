@@ -3,9 +3,10 @@ package main
 import (
 	"context"
 	"github.com/danilluk1/avito-tech/config"
-	api "github.com/danilluk1/avito-tech/internal/api"
-	router "github.com/danilluk1/avito-tech/internal/api/router"
+	"github.com/danilluk1/avito-tech/internal/app/api"
+	router "github.com/danilluk1/avito-tech/internal/app/api/router"
 	announcementimpl "github.com/danilluk1/avito-tech/internal/services/announcements/impl"
+	loggerimpl "github.com/danilluk1/avito-tech/internal/services/logger/impl"
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
 	"log"
@@ -35,6 +36,7 @@ func main() {
 
 	app := &api.App{
 		AnnouncementService: announcementimpl.NewAnnouncementService(db),
+		Logger:              loggerimpl.NewLogger(),
 	}
 
 	router := router.Setup(app)

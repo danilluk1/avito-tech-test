@@ -1,13 +1,12 @@
 package announcements
 
 import (
-	"github.com/danilluk1/avito-tech/internal/api"
+	"github.com/danilluk1/avito-tech/internal/app/api"
 	"net/http"
 )
 
 func GetAnnouncement(app *api.App) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 	}
 }
 
