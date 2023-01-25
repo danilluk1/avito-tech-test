@@ -6,7 +6,8 @@ CREATE TABLE announcements (
 );
 
 CREATE TABLE photos (
-                        link TEXT PRIMARY KEY,
+                        id SERIAL PRIMARY KEY,
+                        link TEXT,
                         announcement_id INTEGER,
                         CONSTRAINT announcement_id
                             FOREIGN KEY (announcement_id)

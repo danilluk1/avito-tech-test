@@ -2,7 +2,6 @@ package impl
 
 import (
 	"database/sql"
-	"fmt"
 	sq "github.com/Masterminds/squirrel"
 	"github.com/danilluk1/avito-tech/internal/db/models"
 	"github.com/danilluk1/avito-tech/internal/dto"
@@ -24,9 +23,10 @@ func (as AnnouncementService) GetById(id int32) (*models.Announcement, error) {
 	query, args, err := sq.
 		Select("*").
 		From("announcements").
-		Where(sq.Eq{"id": id}).ToSql()
+		Where(sq.Eq{"id": id}).
+		//Join("photos ON photos.announcement_id = $1", id).
+		ToSql()
 	query = as.pgConn.Rebind(query)
-
 	if err != nil {
 		return nil, err
 	}
@@ -44,29 +44,49 @@ func (as AnnouncementService) GetById(id int32) (*models.Announcement, error) {
 }
 
 func (as AnnouncementService) GetMany(
-	dto dto.GetAnnouncementsQuery,
+	dto *dto.GetAnnouncementsQuery,
 ) (*[]models.Announcement, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (as AnnouncementService) Create(dto dto.CreateAnnouncement) (*models.Announcement, error) {
+func (as AnnouncementService) Create(dto *dto.CreateAnnouncement) (*models.Announcement, error) {
 	query, args, err := sq.
 		Insert("announcements").
 		Columns("name", "description").
-		Values(dto.Name, dto.Description).ToSql()
+		Values(dto.Name, dto.Description).Suffix("RETURNING id").ToSql()
 	query = as.pgConn.Rebind(query)
 
 	if err != nil {
 		return nil, err
 	}
 
-	rows, err := as.pgConn.Queryx(query, args...)
+	res := as.pgConn.QueryRowx(query, args...)
+	var id int32
+	err = res.Scan(&id)
 	if err != nil {
 		return nil, err
 	}
 
-	fmt.Println(rows)
+	for _, image := range dto.Photos {
+		query, args, err := sq.
+			Insert("photos").
+			Columns("link, announcement_id").
+			Values(image, id).ToSql()
+		query = as.pgConn.Rebind(query)
+		if err != nil {
+			return nil, err
+		}
+		_, err = as.pgConn.Queryx(query, args...)
+		if err != nil {
+			return nil, err
+		}
+	}
 
-	return nil, nil
+	announcement, err := as.GetById(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return announcement, nil
 }
