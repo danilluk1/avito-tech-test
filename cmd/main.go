@@ -42,7 +42,7 @@ func main() {
 	router := router.Setup(app)
 
 	srv := &http.Server{
-		Addr:         "localhost:3002",
+		Addr:         "0.0.0.0:3002",
 		WriteTimeout: time.Second * 15,
 		ReadTimeout:  time.Second * 15,
 		IdleTimeout:  time.Second * 60,

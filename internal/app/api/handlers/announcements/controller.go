@@ -28,7 +28,7 @@ type AnnouncementsResponse struct {
 	}
 }
 
-// swagger:route GET /api/announcements/{announcementId} announcements getSingleAnnouncement
+// swagger:route GET /api/announcements/{announcementId}
 //
 // # Get announcement by id
 //
@@ -45,9 +45,10 @@ type AnnouncementsResponse struct {
 //     type: integer
 //
 // Responses:
-// 200: announcement announcementResponse
-// 404: notFoundError
-// 505: internalError
+//
+//	200: announcementResponse
+//	404: notFoundError
+//	500: internalError
 func GetAnnouncement(app *api.App) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		announcementId, err := strconv.Atoi(chi.URLParam(r, "id"))
@@ -87,7 +88,7 @@ func GetAnnouncement(app *api.App) func(w http.ResponseWriter, r *http.Request) 
 	}
 }
 
-// swagger:route GET /api/announcements announcements getManyAnnouncements
+// swagger:route GET /api/announcements
 //
 // # Get many announcements
 //
@@ -95,9 +96,41 @@ func GetAnnouncement(app *api.App) func(w http.ResponseWriter, r *http.Request) 
 //   - application/json
 //
 // Schemes: http, https
-// Security:
 //
-//	none:
+// Parameters:
+//   - name: limit
+//     in: query
+//     description: limit
+//     required: false
+//     schema:
+//     type: integer
+//     max: 30
+//     min: 1
+//   - name: offset
+//     in: query
+//     description: offset
+//     required: false
+//     schema:
+//     type: integer
+//     min: 0
+//   - name: sort
+//     in: query
+//     description: sort type
+//     required: false
+//     schema:
+//     type: string
+//   - name: order
+//     in: query
+//     description: order type
+//     required: false
+//     schema:
+//     type: string
+//
+// Responses:
+//
+//	200: announcementsResponse
+//	400: validationError
+//	500: internalError
 func GetAnnouncements(app *api.App) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var limit uint8 = 10
