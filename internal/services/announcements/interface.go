@@ -7,6 +7,6 @@ import (
 
 type AnnouncementService interface {
 	GetById(id int32, optional bool) (*models.Announcement, error)
-	GetMany(dto *dto.GetAnnouncementsQuery) (*[]models.Announcement, error)
+	GetMany(limit, offset uint64, sortBy dto.SortBy, orderBy dto.OrderBy) ([]models.Announcement, error)
 	Create(dto *dto.CreateAnnouncement) (*models.Announcement, error)
 }

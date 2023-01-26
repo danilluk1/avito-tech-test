@@ -23,3 +23,12 @@ func GetAnnouncementById(app *api.App, id int32, optional bool) (*models.Announc
 
 	return announcement, nil
 }
+
+func GetOrderedAnnouncements(app *api.App, limit, offset uint64, sortBy dto.SortBy, orderBy dto.OrderBy) ([]models.Announcement, error) {
+	announcements, err := app.AnnouncementService.GetMany(limit, offset, sortBy, orderBy)
+	if err != nil {
+		return nil, err
+	}
+
+	return announcements, nil
+}

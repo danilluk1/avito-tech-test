@@ -17,6 +17,9 @@ tasks:
     migrate-remove:
         cmds:
             - docker run --user $(id -u):$(id -g) -v $(pwd)/db/migrations:/migrations --network host migrate/migrate -path=/migrations/ -database postgres://postgres:admin@localhost:5432/avito_tech?sslmode=disable down -all
+    gen-docs:
+        cmds:
+            - swagger generate spec -o ./docs/swagger.yml -i ./docs/swagger.yml -m
     down:
         cmds:
             - docker compose down -v

@@ -1,6 +1,9 @@
 package dto
 
-import "time"
+import (
+	"github.com/shopspring/decimal"
+	"time"
+)
 
 type SortBy string
 
@@ -17,11 +20,12 @@ const (
 )
 
 type Announcement struct {
-	ID          int32     `json:"id"`
-	Name        string    `json:"name"`
-	Description string    `json:"description"`
-	CreatedAt   time.Time `json:"created_at"`
-	Photos      []string  `json:"photos"`
+	ID          int32           `json:"id"`
+	Name        string          `json:"name"`
+	Description string          `json:"description"`
+	Price       decimal.Decimal `json:"price"`
+	CreatedAt   time.Time       `json:"created_at"`
+	Photos      []string        `json:"photos"`
 }
 
 type GetAnnouncementsQuery struct {
@@ -32,7 +36,8 @@ type GetAnnouncementsQuery struct {
 }
 
 type CreateAnnouncement struct {
-	Name        string   `json:"name" validate:"required,min=5,max=200"`
-	Description string   `json:"description" validate:"required,min=5,max=1000"`
-	Photos      []string `json:"photos" validate:"required"`
+	Name        string          `json:"name" validate:"required,min=5,max=200"`
+	Price       decimal.Decimal `json:"price" validate:"required"`
+	Description string          `json:"description" validate:"required,min=5,max=1000"`
+	Photos      []string        `json:"photos" validate:"required"`
 }

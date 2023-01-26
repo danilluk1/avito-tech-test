@@ -2,6 +2,7 @@ package impl
 
 import (
 	"database/sql"
+	"fmt"
 	sq "github.com/Masterminds/squirrel"
 	"github.com/danilluk1/avito-tech/internal/db/models"
 	"github.com/danilluk1/avito-tech/internal/dto"
@@ -21,7 +22,7 @@ func NewAnnouncementService(pgConn *sqlx.DB) announcements.AnnouncementService {
 
 func (as AnnouncementService) GetById(id int32, optional bool) (*models.Announcement, error) {
 	query, args, err := sq.
-		Select("announcements.id as id, name, description, array_agg(link) as photos").
+		Select("announcements.id as id, name, description, price, array_agg(link) as photos").
 		From("announcements").
 		InnerJoin("photos ON photos.announcement_id = $1", id).
 		GroupBy("announcements.id, link").
@@ -45,16 +46,37 @@ func (as AnnouncementService) GetById(id int32, optional bool) (*models.Announce
 }
 
 func (as AnnouncementService) GetMany(
-	dto *dto.GetAnnouncementsQuery,
-) (*[]models.Announcement, error) {
-	return nil, nil
+	limit, offset uint64, sortBy dto.SortBy, orderBy dto.OrderBy,
+) ([]models.Announcement, error) {
+	query, args, err := sq.
+		Select("announcements.id as id, name, description, price, array_agg(link) as photos").
+		From("announcements").
+		InnerJoin("photos ON photos.announcement_id = announcements.id").
+		GroupBy("announcements.id, link").
+		OrderBy(fmt.Sprintf("%s %s", sortBy, orderBy)).
+		Limit(limit).
+		Offset(offset).
+		ToSql()
+
+	query = as.pgConn.Rebind(query)
+	if err != nil {
+		return nil, err
+	}
+
+	var announcements []models.Announcement
+	err = as.pgConn.Select(&announcements, query, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	return announcements, nil
 }
 
 func (as AnnouncementService) Create(dto *dto.CreateAnnouncement) (*models.Announcement, error) {
 	query, args, err := sq.
 		Insert("announcements").
-		Columns("name", "description").
-		Values(dto.Name, dto.Description).Suffix("RETURNING id").ToSql()
+		Columns("name", "description", "price").
+		Values(dto.Name, dto.Description, dto.Price).Suffix("RETURNING id").ToSql()
 	query = as.pgConn.Rebind(query)
 
 	if err != nil {
