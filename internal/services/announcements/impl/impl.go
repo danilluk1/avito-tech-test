@@ -23,8 +23,9 @@ func NewAnnouncementService(pgConn *sqlx.DB) announcements.AnnouncementService {
 func (as AnnouncementService) GetById(id int32, optional bool) (*models.Announcement, error) {
 	query, args, err := sq.
 		Select("announcements.id as id, name, description, price, array_agg(link) as photos").
+		Where(sq.Eq{"announcements.id": id}).
 		From("announcements").
-		InnerJoin("photos ON photos.announcement_id = $1", id).
+		InnerJoin("photos ON photos.announcement_id = announcements.id").
 		GroupBy("announcements.id, link").
 		ToSql()
 	query = as.pgConn.Rebind(query)
@@ -32,9 +33,9 @@ func (as AnnouncementService) GetById(id int32, optional bool) (*models.Announce
 		return nil, err
 	}
 
-	announcement := &models.Announcement{}
+	announcement := models.Announcement{}
 	row := as.pgConn.QueryRowx(query, args...)
-	err = row.StructScan(announcement)
+	err = row.StructScan(&announcement)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
@@ -42,7 +43,7 @@ func (as AnnouncementService) GetById(id int32, optional bool) (*models.Announce
 		return nil, err
 	}
 
-	return announcement, nil
+	return &announcement, nil
 }
 
 func (as AnnouncementService) GetMany(

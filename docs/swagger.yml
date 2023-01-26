@@ -1,0 +1,93 @@
+definitions:
+    StringArray:
+        items:
+            type: string
+        title: StringArray represents a one-dimensional array of the PostgreSQL character types.
+        type: array
+        x-go-package: github.com/lib/pq
+paths:
+    /api/announcements:
+        get:
+            operationId: getManyAnnouncements
+            produces:
+                - application/json
+            schemes:
+                - http
+                - https
+            security:
+                - none: []
+            summary: Get many announcements
+            tags:
+                - announcements
+responses:
+    announcementResponse:
+        description: ""
+        schema:
+            properties:
+                created_at:
+                    format: date-time
+                    type: string
+                    x-go-name: CreatedAt
+                description:
+                    type: string
+                    x-go-name: Description
+                id:
+                    format: int32
+                    type: integer
+                    x-go-name: ID
+                name:
+                    type: string
+                    x-go-name: Name
+                photos:
+                    $ref: '#/definitions/StringArray'
+                price:
+                    type: string
+                    x-go-name: Price
+            type: object
+    announcementsResponse:
+        description: ""
+        schema:
+            items:
+                properties:
+                    created_at:
+                        format: date-time
+                        type: string
+                        x-go-name: CreatedAt
+                    description:
+                        type: string
+                        x-go-name: Description
+                    id:
+                        format: int32
+                        type: integer
+                        x-go-name: ID
+                    name:
+                        type: string
+                        x-go-name: Name
+                    photos:
+                        $ref: '#/definitions/StringArray'
+                    price:
+                        type: string
+                        x-go-name: Price
+                type: object
+            type: array
+    internalError:
+        description: |-
+            InternalError Internal error
+            Some internal error happened
+    notFoundError:
+        description: NotFoundError Not Found
+    validationError:
+        description: ValidationError is an error that used when the required input fails validation
+        schema:
+            properties:
+                messages:
+                    description: The validation message
+                    example: []
+                    items:
+                        type: string
+                    type: array
+                    x-go-name: Messages
+            required:
+                - messages
+            type: object
+swagger: "2.0"
